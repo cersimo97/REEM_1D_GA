@@ -37,9 +37,14 @@ export default class Field {
 
   getEmitters() {
     let es: Map<number, Emitter> = new Map()
-    for (let i = 0; i < this.arr.length; i++) {
+    let i = 0
+    while (i < this.arr.length) {
       if (this.arr[i].content instanceof Emitter) {
-        es.set(i, this.arr[i].content as Emitter)
+        let e = this.arr[i].content as Emitter
+        es.set(i, e)
+        i += e.l
+      } else {
+        i++
       }
     }
 
@@ -65,16 +70,28 @@ export default class Field {
       while (!next.done) {
         sum += (this.arr[i].content as Receptor).getChargeDecay(
           next.value[1],
-          Math.min(
-            Math.abs(next.value[0] - i),
-            Math.abs(next.value[0] - i - this.arr[i].content!.l)
-          )
+          Field.calcMinDistance(next.value, [
+            i,
+            this.arr[i].content as Receptor,
+          ])
         )
         next = e.next()
       }
-      charges[i] = sum
+      charges.push(sum)
       i += (this.arr[i].content as ObjectElement).l
     }
     return charges.reduce((prev, curr) => prev + curr, 0)
+  }
+
+  static calcMinDistance(
+    [aPos, a]: [number, ObjectElement],
+    [bPos, b]: [number, ObjectElement]
+  ): number {
+    return Math.min(
+      Math.abs(aPos - bPos),
+      Math.abs(aPos + a.l - bPos),
+      Math.abs(aPos - (bPos + b.l)),
+      Math.abs(aPos + a.l - (bPos + b.l))
+    )
   }
 }
