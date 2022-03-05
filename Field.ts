@@ -36,10 +36,10 @@ export default class Field {
   }
 
   getEmitters() {
-    let es: [Emitter, number][] = []
+    let es: Map<number, Emitter> = new Map()
     for (let i = 0; i < this.arr.length; i++) {
       if (this.arr[i].content instanceof Emitter) {
-        es.push([this.arr[i].content as Emitter, i])
+        es.set(i, this.arr[i].content as Emitter)
       }
     }
 
@@ -51,25 +51,25 @@ export default class Field {
     let charges: number[] = []
     let i = 0
     while (i < this.arr.length) {
-      if (emitters.map(m => m[1]).includes(i)) {
-        charges[i] = 0
-        i += (this.arr[i].content as ObjectElement).l
+      if (emitters.has(i)) {
+        i += emitters.get(i)!.l
         continue
       }
       if (this.arr[i].isEmpty()) {
-        charges[i] = 0
         i++
         continue
       }
-      charges[i] = emitters.reduce(
-        (prev, curr) =>
-          prev +
-          (this.arr[i].content as Receptor).getChargeDecay(
-            curr[0],
-            Math.abs(curr[1] - i)
-          ),
-        0
-      )
+      let sum = 0
+      let e = emitters.entries()
+      let next = e.next()
+      while (!next.done) {
+        sum += (this.arr[i].content as Receptor).getChargeDecay(
+          next.value[1],
+          Math.abs(next.value[0] - i)
+        )
+        next = e.next()
+      }
+      charges[i] = sum
       i += (this.arr[i].content as ObjectElement).l
     }
     return charges.reduce((prev, curr) => prev + curr, 0)

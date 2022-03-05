@@ -16,7 +16,8 @@ it('Shuold return emitters', () => {
   let f = new Field(10)
   let e = new Emitter(1, 20, 3)
   f.assign(e, 3)
-  expect(f.getEmitters()).toEqual([[e, 3]])
+  let m = new Map([[3, e]])
+  expect(f.getEmitters()).toEqual(m)
 })
 
 it('Should calc charge decays', () => {
