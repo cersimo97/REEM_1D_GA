@@ -20,13 +20,28 @@ it('Shuold return emitters', () => {
   expect(f.getEmitters()).toEqual(m)
 })
 
-it('Should calc charge decays', () => {
-  let f = new Field(10)
-  let e = new Emitter(1, 20, 3)
-  f.assign(e, 3)
-  f.assign(new Receptor(1), 2)
-  f.assign(new Receptor(1), 9)
-  expect(f.calc()).toBe(20)
-  f.assign(new Receptor(3), 5)
-  expect(f.calc()).toBe(40)
+describe('Calc charge decays', () => {
+  it('1 emitter', () => {
+    let f = new Field(10)
+    let e = new Emitter(1, 20, 3)
+    f.assign(e, 3)
+    f.assign(new Receptor(1), 2)
+    f.assign(new Receptor(1), 9)
+    expect(f.calc()).toBe(20)
+    f.assign(new Receptor(3), 5)
+    expect(f.calc()).toBe(40)
+  })
+
+  it('2 emitters ', () => {
+    let f = new Field(10)
+    let e1 = new Emitter(1, 20, 3)
+    let e2 = new Emitter(1, 30, 2)
+    let r = new Receptor(2)
+    // [__*__00_*_]
+    f.assign(e1, 2)
+    f.assign(e2, 8)
+    f.assign(r, 5)
+
+    expect(f.calc()).toBe(50)
+  })
 })

@@ -65,7 +65,10 @@ export default class Field {
       while (!next.done) {
         sum += (this.arr[i].content as Receptor).getChargeDecay(
           next.value[1],
-          Math.abs(next.value[0] - i)
+          Math.min(
+            Math.abs(next.value[0] - i),
+            Math.abs(next.value[0] - i - this.arr[i].content!.l)
+          )
         )
         next = e.next()
       }
